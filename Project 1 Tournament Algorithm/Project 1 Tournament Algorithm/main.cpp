@@ -23,6 +23,9 @@
 using namespace std;
 
 int num_of_thread = 0;
+int counter = 0;
+
+pthread_mutex_t my_lock;
 
 class PetersonSpinLock
 {
@@ -99,43 +102,53 @@ private:
 
 void *Do_Something(void *args)
 {
-    Tournament T;
-    int counter = 0;
-    unsigned long thread_id;
+    //Tournament T;
+    //int counter = 0;
+    //unsigned long thread_id;
     
-    thread_id = (unsigned long)args;
+    //thread_id = (unsigned long)args;
         
-    T.lock(thread_id, num_of_thread);
-        
+    //T.lock(thread_id, num_of_thread);
+    pthread_mutex_lock(&my_lock);
+    
     unsigned long i = 0;
     counter += 1;
-    cout<<"\n Job"<<counter<<" started\n";
+    cout<<"\n Job "<<counter<<" started\n";
         
     for(i=0; i<(0xFFFFFFFF);i++);
         
-    cout<<"\n Job "<<counter<<"finished\n";
+    cout<<"\n Job "<<counter<<" finished\n";
         
-        
-    T.unlock(thread_id);
+    pthread_mutex_unlock(&my_lock);
+    //T.unlock(thread_id);
     
     return NULL;
 }
 
 
-int main(int argc, const char * argv[]) {
+int main(int argc, const char * argv[])
+{
     // insert code here...
 
     int i,j;
     int thread_result; //check if the thread was created successfully.
-    double time_used;
+    //double time_used;
     
-    cin>>num_of_thread;
+    //cin>>num_of_thread;
+    num_of_thread = 2;
     
-    pthread_t my_thread[num_of_thread];
+    pthread_t my_thread[2];
+    
+    int mutex_init = pthread_mutex_init(&my_lock, NULL);
+    if (mutex_init != 0)
+    {
+        cout<<("\n Mutex init failed");
+        return 1;
+    }
     
     for (i = 0; i < num_of_thread; i++)
     {
-        thread_result = pthread_create(&my_thread[i], NULL, Do_Something, (void *)i);
+        thread_result = pthread_create(&my_thread[i], NULL, &Do_Something, (void*)i);
         
         if (thread_result == !0)
         {
@@ -146,10 +159,13 @@ int main(int argc, const char * argv[]) {
     
     for (j = 0; j < num_of_thread; j++)
     {
-        pthread_join(my_thread[i], NULL);
+        pthread_join(my_thread[j], NULL);
     }
     
-    cout<<"DONE"<<endl;
+    pthread_mutex_destroy(&my_lock);
+    
+    
+    cout<<"\nDONE"<<endl;
     
     
     return 0;
