@@ -13,6 +13,8 @@
 #include <cmath>
 #include <time.h>
 #include <sys/time.h>
+#include <unistd.h>
+#include <string.h>
 
 #define CPU_BARRIER()  __sync_synchronize()
 #define COMPILER_BARRIER() __asm__ __volatile__("" : : : "memory")
@@ -95,7 +97,7 @@ private:
 };
 
 
-void Do_Something(void *args, int num_of_threads)
+void *Do_Something(void *args)
 {
     Tournament T;
     int counter = 0;
@@ -103,7 +105,7 @@ void Do_Something(void *args, int num_of_threads)
     
     thread_id = (unsigned long)args;
         
-    T.lock(thread_id, num_of_threads);
+    T.lock(thread_id, num_of_thread);
         
     unsigned long i = 0;
     counter += 1;
@@ -116,7 +118,7 @@ void Do_Something(void *args, int num_of_threads)
         
     T.unlock(thread_id);
     
-    return;
+    return NULL;
 }
 
 
@@ -126,17 +128,16 @@ int main(int argc, const char * argv[]) {
     int i,j;
     int thread_result; //check if the thread was created successfully.
     double time_used;
-    pthread_t *my_thread;
     
     cin>>num_of_thread;
     
-    my_thread = (pthread_t*)malloc((sizeof(pthread_t) * num_of_thread));
+    pthread_t my_thread[num_of_thread];
     
     for (i = 0; i < num_of_thread; i++)
     {
-        thread_result = pthread_create(&my_thread, NULL, Do_Something, (void*)i);
+        thread_result = pthread_create(&my_thread[i], NULL, Do_Something, (void *)i);
         
-        if (thread_result == 0)
+        if (thread_result == !0)
         {
             cout<<"Failed to create threads.\n";
             break;
