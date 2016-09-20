@@ -124,7 +124,7 @@ int main(int argc, const char * argv[]) {
     // insert code here...
 
     int i,j;
-    bool thread_result; //check if the thread was created successfully.
+    int thread_result; //check if the thread was created successfully.
     double time_used;
     pthread_t *my_thread;
     
@@ -136,7 +136,7 @@ int main(int argc, const char * argv[]) {
     {
         thread_result = pthread_create(&my_thread, NULL, Do_Something, (void*)i);
         
-        if (thread_result == false)
+        if (thread_result == 0)
         {
             cout<<"Failed to create threads.\n";
             break;
