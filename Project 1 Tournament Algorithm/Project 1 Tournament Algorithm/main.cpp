@@ -24,6 +24,7 @@ using namespace std;
 
 int num_of_thread = 0;
 int counter = 0;
+pthread_t self_id;
 
 //pthread_mutex_t my_lock;
 
@@ -38,13 +39,16 @@ public:
     bool acquire_lock(int thread_id)
     {
         int other = !thread_id;
+        self_id = pthread_self();
         flag[thread_id] = true;
         COMPILER_BARRIER();
-        victim = thread_id;
+        victim = self_id;
         
         CPU_BARRIER();
-        while (flag[other] == true && victim == thread_id)
+    
+        while (flag[other] == true && victim == self_id)
         {
+            cout<<self_id<<"\n"<<thread_id<<"\n";
             CPU_RELAX(); //spin
         }
         
@@ -60,7 +64,7 @@ public:
     
 private:
     volatile bool flag[2];
-    volatile int victim;
+    pthread_t victim;
 };
 /*
 class Tournament
@@ -110,9 +114,9 @@ void *Do_Something(void *args)
     //int counter = 0;
     unsigned long thread_id;
     bool get_lock;
+
+    thread_id = (unsigned long int)args;
     
-    thread_id = (unsigned long)args;
-        
 //    get_lock = T.lock(thread_id);
     get_lock = P.acquire_lock(thread_id);
     if (get_lock)
