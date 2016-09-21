@@ -25,7 +25,7 @@ using namespace std;
 int num_of_thread = 0;
 int counter = 0;
 
-pthread_mutex_t my_lock;
+//pthread_mutex_t my_lock;
 
 class PetersonSpinLock
 {
@@ -37,16 +37,18 @@ public:
     }
     bool acquire_lock(int thread_id)
     {
+        int other = !thread_id;
         flag[thread_id] = true;
         COMPILER_BARRIER();
         victim = thread_id;
         
         CPU_BARRIER();
-        while (flag[1-thread_id] == true && victim == thread_id)
+        while (flag[other] == true && victim == thread_id)
         {
-            CPU_RELAX();
+            CPU_RELAX(); //spin
         }
         
+        //get lock successfully
         return true;
     }
     
@@ -57,18 +59,19 @@ public:
     }
     
 private:
-    volatile bool flag[2] = {false,false};
+    volatile bool flag[2];
     volatile int victim;
 };
 
 class Tournament
 {
 public:
-    void lock(int thread_id, int num_of_threads)
+    bool lock(int thread_id)
     {
-        node_id = thread_id + (num_of_threads-1);
-        double tmp = (double)num_of_threads;
+        node_id = thread_id + (num_of_thread-1);
+        double tmp = (double)num_of_thread;
         k = (int)log2(tmp);
+        cout<<node_id<<"\n";
         
         for (level = 0; level < k; level++)
         {
@@ -77,9 +80,9 @@ public:
             P.acquire_lock(p_id[level]);
         }
         
-        return;
+        return true;
     }
-    void unlock(int thread_id)
+    bool unlock(int thread_id)
     {
         node_id = 1;
         for (level = k-1; level > 0; k--)
@@ -88,7 +91,7 @@ public:
             node_id = 2 * node_id + p_id[level];
         }
         
-        return;
+        return false;
     }
     
 private:
@@ -102,14 +105,18 @@ private:
 
 void *Do_Something(void *args)
 {
-    //Tournament T;
+    Tournament T;
     //int counter = 0;
-    //unsigned long thread_id;
+    unsigned long thread_id;
+    bool get_lock;
     
-    //thread_id = (unsigned long)args;
+    thread_id = (unsigned long)args;
         
-    //T.lock(thread_id, num_of_thread);
-    pthread_mutex_lock(&my_lock);
+    get_lock = T.lock(thread_id);
+    if (get_lock) {
+        cout<<"\nGet lock successfully.\n";
+    }
+    cout<<thread_id<<"\n";
     
     unsigned long i = 0;
     counter += 1;
@@ -118,9 +125,8 @@ void *Do_Something(void *args)
     for(i=0; i<(0xFFFFFFFF);i++);
         
     cout<<"\n Job "<<counter<<" finished\n";
-        
-    pthread_mutex_unlock(&my_lock);
-    //T.unlock(thread_id);
+    
+    T.unlock(thread_id);
     
     return NULL;
 }
@@ -139,12 +145,6 @@ int main(int argc, const char * argv[])
     
     pthread_t my_thread[2];
     
-    int mutex_init = pthread_mutex_init(&my_lock, NULL);
-    if (mutex_init != 0)
-    {
-        cout<<("\n Mutex init failed");
-        return 1;
-    }
     
     for (i = 0; i < num_of_thread; i++)
     {
@@ -161,8 +161,6 @@ int main(int argc, const char * argv[])
     {
         pthread_join(my_thread[j], NULL);
     }
-    
-    pthread_mutex_destroy(&my_lock);
     
     
     cout<<"\nDONE"<<endl;
