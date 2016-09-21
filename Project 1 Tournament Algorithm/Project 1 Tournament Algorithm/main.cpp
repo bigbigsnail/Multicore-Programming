@@ -62,7 +62,7 @@ private:
     volatile bool flag[2];
     volatile int victim;
 };
-
+/*
 class Tournament
 {
 public:
@@ -101,22 +101,24 @@ private:
     int k;
     PetersonSpinLock P;
 };
-
+*/
 
 void *Do_Something(void *args)
 {
-    Tournament T;
+    //Tournament T;
+    PetersonSpinLock P;
     //int counter = 0;
     unsigned long thread_id;
     bool get_lock;
     
     thread_id = (unsigned long)args;
         
-    get_lock = T.lock(thread_id);
-    if (get_lock) {
+//    get_lock = T.lock(thread_id);
+    get_lock = P.acquire_lock(thread_id);
+    if (get_lock)
+    {
         cout<<"\nGet lock successfully.\n";
     }
-    cout<<thread_id<<"\n";
     
     unsigned long i = 0;
     counter += 1;
@@ -126,7 +128,8 @@ void *Do_Something(void *args)
         
     cout<<"\n Job "<<counter<<" finished\n";
     
-    T.unlock(thread_id);
+    //T.unlock(thread_id);
+    P.release_lock(thread_id);
     
     return NULL;
 }
@@ -148,7 +151,7 @@ int main(int argc, const char * argv[])
     
     for (i = 0; i < num_of_thread; i++)
     {
-        thread_result = pthread_create(&my_thread[i], NULL, &Do_Something, (void*)i);
+        thread_result = pthread_create(&my_thread[i], NULL, Do_Something, (void*)i);
         
         if (thread_result == !0)
         {
