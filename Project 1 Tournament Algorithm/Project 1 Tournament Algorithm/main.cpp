@@ -11,10 +11,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <cmath>
-#include <time.h>
-#include <sys/time.h>
+#include <sys/types.h>
 #include <unistd.h>
 #include <string.h>
+#include <atomic>
 
 #define CPU_BARRIER()  __sync_synchronize()
 #define COMPILER_BARRIER() __asm__ __volatile__("" : : : "memory")
@@ -26,8 +26,6 @@ int num_of_thread = 0;
 int counter = 0;
 pthread_t self_id;
 
-//pthread_mutex_t my_lock;
-
 class PetersonSpinLock
 {
 public:
@@ -38,17 +36,16 @@ public:
     }
     bool acquire_lock(int thread_id)
     {
-        int other = !thread_id;
         self_id = pthread_self();
         flag[thread_id] = true;
         COMPILER_BARRIER();
-        victim = self_id;
+        victim = thread_id;
         
         CPU_BARRIER();
-    
-        while (flag[other] == true && victim == self_id)
+        
+        while (flag[1-thread_id] == true && victim == thread_id)
         {
-            cout<<self_id<<"\n"<<thread_id<<"\n";
+            cout<<self_id<<"\n";
             CPU_RELAX(); //spin
         }
         
@@ -61,11 +58,12 @@ public:
         flag[thread_id] = false;
         return true;
     }
-    
+
 private:
-    volatile bool flag[2];
-    pthread_t victim;
+    std::atomic<bool>  flag[2];
+    std::atomic<int>  victim;
 };
+
 /*
 class Tournament
 {
@@ -113,16 +111,11 @@ void *Do_Something(void *args)
     PetersonSpinLock P;
     //int counter = 0;
     unsigned long thread_id;
-    bool get_lock;
 
     thread_id = (unsigned long int)args;
     
 //    get_lock = T.lock(thread_id);
-    get_lock = P.acquire_lock(thread_id);
-    if (get_lock)
-    {
-        cout<<"\nGet lock successfully.\n";
-    }
+    P.acquire_lock(thread_id);
     
     unsigned long i = 0;
     counter += 1;
@@ -152,10 +145,11 @@ int main(int argc, const char * argv[])
     
     pthread_t my_thread[2];
     
-    
     for (i = 0; i < num_of_thread; i++)
     {
         thread_result = pthread_create(&my_thread[i], NULL, Do_Something, (void*)i);
+        
+        //cout<<(int)(unsigned long int)(void*)i<<"\n";
         
         if (thread_result == !0)
         {
