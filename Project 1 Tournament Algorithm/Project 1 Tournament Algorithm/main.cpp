@@ -31,21 +31,21 @@ class PetersonSpinLock
 public:
     PetersonSpinLock()
     {
-        flag[0] = false;
-        flag[1] = false;
+        flag[0].store(false);
+        flag[1].store(false);
     }
     bool acquire_lock(int thread_id)
     {
-        self_id = pthread_self();
-        flag[thread_id] = true;
+        //self_id = pthread_self();
+        flag[thread_id].store(true);
         COMPILER_BARRIER();
-        victim = thread_id;
+        victim.store(thread_id);
         
         CPU_BARRIER();
         
-        while (flag[1-thread_id] == true && victim == thread_id)
+        while (flag[1-thread_id].load() == true && victim.load() == thread_id)
         {
-            cout<<self_id<<"\n";
+            //cout<<self_id<<"\n";
             CPU_RELAX(); //spin
         }
         
@@ -55,7 +55,7 @@ public:
     
     bool release_lock(int thread_id)
     {
-        flag[thread_id] = false;
+        flag[thread_id].store(false);
         return true;
     }
 
@@ -113,8 +113,7 @@ void *Do_Something(void *args)
     unsigned long thread_id;
 
     thread_id = (unsigned long int)args;
-    
-//    get_lock = T.lock(thread_id);
+
     P.acquire_lock(thread_id);
     
     unsigned long i = 0;
@@ -125,7 +124,7 @@ void *Do_Something(void *args)
         
     cout<<"\n Job "<<counter<<" finished\n";
     
-    //T.unlock(thread_id);
+
     P.release_lock(thread_id);
     
     return NULL;
