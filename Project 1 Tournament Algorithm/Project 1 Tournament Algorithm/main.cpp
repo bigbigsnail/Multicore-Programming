@@ -16,6 +16,7 @@
 #include <string.h>
 #include <atomic>
 #include "PetersonLock.h"
+#include "Tournament.h"
 
 #define CPU_BARRIER()  __sync_synchronize()
 #define COMPILER_BARRIER() __asm__ __volatile__("" : : : "memory")
@@ -25,11 +26,13 @@ using namespace std;
 
 static int num_of_thread = 0;
 int counter = 0;
-PetersonSpinLock P;
+//PetersonSpinLock P;
+Tournament T;
 
 void DoSomething(int thread_id)
 {
-    P.AcquireLock(thread_id);
+    T.lock(thread_id, num_of_thread);
+    //P.AcquireLock(thread_id);
     
     unsigned long i = 0;
     counter += 1;
@@ -39,8 +42,8 @@ void DoSomething(int thread_id)
     
     printf("\n Job %d finished\n", counter);
     
-    P.ReleaseLock(thread_id);
-
+    T.unlock(thread_id, num_of_thread);
+    //P.ReleaseLock(thread_id);
 }
 
 

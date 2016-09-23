@@ -6,8 +6,8 @@
 //  Copyright © 2016 bigbigsnail. All rights reserved.
 //
 
-#ifndef lock_h
-#define lock_h
+#ifndef PetersonLock_h
+#define PetersonLock_h
 
 #include <iostream>
 #include <thread>

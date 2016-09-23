@@ -25,6 +25,7 @@
 /* Begin PBXFileReference section */
 		D542622A1D91CA9700B398EF /* Project 1 Tournament Algorithm */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Project 1 Tournament Algorithm"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D542622D1D91CA9700B398EF /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		D57127F91D95CBB80055BBB1 /* Tournament.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Tournament.h; sourceTree = "<group>"; };
 		D5EB8E801D94C20B00BA1746 /* PetersonLock.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PetersonLock.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -60,6 +61,7 @@
 			children = (
 				D5EB8E801D94C20B00BA1746 /* PetersonLock.h */,
 				D542622D1D91CA9700B398EF /* main.cpp */,
+				D57127F91D95CBB80055BBB1 /* Tournament.h */,
 			);
 			path = "Project 1 Tournament Algorithm";
 			sourceTree = "<group>";
