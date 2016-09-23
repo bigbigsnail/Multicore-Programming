@@ -18,7 +18,6 @@
 #include <unistd.h>
 #include <string.h>
 #include <atomic>
-#include "lock.h"
 
 using namespace std;
 

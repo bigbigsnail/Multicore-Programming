@@ -15,7 +15,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <atomic>
-#include "lock.h"
+#include "PetersonLock.h"
 
 #define CPU_BARRIER()  __sync_synchronize()
 #define COMPILER_BARRIER() __asm__ __volatile__("" : : : "memory")
@@ -58,7 +58,7 @@ int main(int argc, const char * argv[])
         my_thread[i] = thread(DoSomething, i);
     }
     
-    for (int j = 0; j < num_of_thread; j++)
+    for (int j = 0 ; j < num_of_thread; j++)
     {
         my_thread[j].join();
     }
