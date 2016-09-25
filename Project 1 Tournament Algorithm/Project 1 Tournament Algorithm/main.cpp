@@ -51,8 +51,8 @@ int main(int argc, const char * argv[])
 {
     // insert code here...
     //num_of_thread = atoi(argv[1]);
-    num_of_thread = 2;
-    static const int num = 2;
+    num_of_thread = 4;
+    static const int num = 4;
     
     thread my_thread[num];
     

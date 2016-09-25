@@ -20,7 +20,7 @@
 #include <atomic>
 #include "PetersonLock.h"
 
-const int thread_max = 2;
+const int thread_max = 4;
 PetersonSpinLock PLock[thread_max];
 
 class Tournament
@@ -42,7 +42,7 @@ public:
             for (int level = 1; level <= k; level++)
             {
                 threads_by_id[t_id].present[level].store((threads_by_id[t_id].node_id.load() % 2));
-                threads_by_id[t_id].node_id.store((int)floor(node / 2.0));
+                threads_by_id[t_id].node_id.store((int)floor(threads_by_id[t_id].node_id.load() / 2.0));
                 
                 PLock[threads_by_id[t_id].node_id.load()].AcquireLock(threads_by_id[t_id].present[level]);
             }
