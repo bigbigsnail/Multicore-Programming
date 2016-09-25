@@ -20,7 +20,7 @@
 #include <atomic>
 #include "PetersonLock.h"
 
-const int thread_max = 100;
+const int thread_max = 2;
 PetersonSpinLock PLock[thread_max];
 
 class Tournament
@@ -28,42 +28,60 @@ class Tournament
 public:
     void lock(int t_id, int num)
     {
-        int k;
-        int tmp;
-        
-        tmp = t_id + (num - 1);
-        node_id.exchange(tmp);
-        
-        k = (int)ceil(log2((double)num));
-        cout<<k<<"\n";
-        
-        for (int level = 1; level <= k; level++)
-        {
-            p_id[level].store((node_id % 2));
-            node_id.store(floor(node_id / 2.0));
+//        if (num == 2)
+//        {
+//            PLock[0].AcquireLock(t_id);
+//        }
+//        else
+//        {
+            int k = (int)ceil(log2((double)num));
             
-            PLock[node_id.load()].AcquireLock(p_id[level].load());
-        }
+            threads_by_id[t_id].thread_id.store(t_id);
+            threads_by_id[t_id].node_id.store((t_id + num - 1));
+            
+            for (int level = 1; level <= k; level++)
+            {
+                threads_by_id[t_id].present[level].store((threads_by_id[t_id].node_id.load() % 2));
+                threads_by_id[t_id].node_id.store((int)floor(node / 2.0));
+                
+                PLock[threads_by_id[t_id].node_id.load()].AcquireLock(threads_by_id[t_id].present[level]);
+            }
+//        }
     }
     
     void unlock(int t_id, int num)
     {
-        int tmp;
-        node_id.exchange(1, memory_order_acq_rel);
-        int k = (int)ceil(log2((double)num));
-        
-        for (int level = k; level >= 1; level--)
-        {
-            PLock[node_id.load()].ReleaseLock(p_id[level].load());
+        //if (num == 2)
+        //{
+        //    PLock[0].ReleaseLock(t_id);
+//        }
+//        else
+//        {
+            int k;
             
-            tmp = p_id[level].load();
-            node_id.store((2 * (node_id.load()) + tmp));
-        }
+            k = (int)ceil(log2((double)num));
+            threads_by_id[t_id].thread_id.store(t_id);
+            threads_by_id[t_id].node_id.store(0);
+            node = threads_by_id[t_id].node_id.load();
+            
+            for (int level = k; level >= 1; level--)
+            {
+                PLock[node].ReleaseLock(threads_by_id[t_id].present[level]);
+                node = (2 * threads_by_id[t_id].node_id.load()) + threads_by_id[t_id].present[level];
+            }
+            
+//        }
     }
     
 private:
-    atomic<int> node_id;
-    atomic<int> p_id[thread_max];
+    struct thread_node
+    {
+        atomic<int> thread_id;
+        atomic<int> node_id;
+        atomic<int> present[thread_max];
+    } threads_by_id[thread_max];
+    
+    atomic<int> node;
 };
 
 #endif /* Tournament_h */
