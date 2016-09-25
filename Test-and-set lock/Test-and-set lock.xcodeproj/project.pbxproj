@@ -26,6 +26,7 @@
 		D5307B3C1D98253600B1A8E0 /* Test-and-set lock */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Test-and-set lock"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D5307B3F1D98253600B1A8E0 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		D5307B461D98260200B1A8E0 /* test-and-set.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "test-and-set.h"; sourceTree = "<group>"; };
+		D57E22901D98655B00117920 /* TTAS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TTAS.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,6 +61,7 @@
 			children = (
 				D5307B461D98260200B1A8E0 /* test-and-set.h */,
 				D5307B3F1D98253600B1A8E0 /* main.cpp */,
+				D57E22901D98655B00117920 /* TTAS.h */,
 			);
 			path = "Test-and-set lock";
 			sourceTree = "<group>";
@@ -251,6 +253,7 @@
 				D5307B451D98253600B1A8E0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

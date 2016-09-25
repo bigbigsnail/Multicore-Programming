@@ -13,16 +13,21 @@
 #include <stdlib.h>
 #include <cmath>
 #include <time.h>
+#include <new>
 #include "test-and-set.h"
+#include "TTAS.h"
 
 using namespace std;
 
 TestAndSet TAS_Lock;
+TTAS TTAS_Lock;
 int counter = 0;
+int num_of_thread = 0;
 
 void DoSomething()
 {
-    TAS_Lock.lock();
+    //TAS_Lock.lock();
+    TTAS_Lock.lock();
     
     unsigned long i = 0;
     counter += 1;
@@ -33,16 +38,16 @@ void DoSomething()
     
     cout<<"\n Job "<<counter<<" finished\n";
     
-    TAS_Lock.unlock();
+    //TAS_Lock.unlock();
+    TTAS_Lock.unlock();
 }
 
 int main(int argc, const char * argv[])
 {
     // insert code here...
-    int num_of_thread = 8;
-    static const int num = 8;
-    
-    thread my_thread[num];
+    num_of_thread = atoi(argv[1]);
+
+    thread *my_thread = new thread[num_of_thread*sizeof(thread*)];
     
     for (int i = 0; i < num_of_thread; i++)
     {
@@ -54,6 +59,7 @@ int main(int argc, const char * argv[])
         my_thread[j].join();
     }
     
-
+    delete[] my_thread;
+    
     return 0;
 }
