@@ -27,14 +27,9 @@ string type;
 
 void DoSomething()
 {
-    if (type == "TAS")
-    {
-        TAS_Lock.lock();
-    }
-    else if (type == "TTAS")
-    {
-        TTAS_Lock.lock();
-    }
+    TAS_Lock.lock();
+//    TTAS_Lock.lock();
+    
     
     unsigned long i = 0;
     counter += 1;
@@ -45,14 +40,8 @@ void DoSomething()
     
     cout<<"\n Job "<<counter<<" finished\n";
     
-    if (type == "TAS")
-    {
-        TAS_Lock.unlock();
-    }
-    else if (type == "TTAS")
-    {
-        TTAS_Lock.unlock();
-    }
+    TAS_Lock.unlock();
+//    TTAS_Lock.unlock();
 }
 
 int main(int argc, const char * argv[])
@@ -61,7 +50,6 @@ int main(int argc, const char * argv[])
     time_t start_time, end_time;
     
     num_of_thread = atoi(argv[1]);
-    type = atoi(argv[2]);
     
     time(&start_time);
     
