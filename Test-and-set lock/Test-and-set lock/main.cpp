@@ -47,7 +47,7 @@ void DoSomething()
     
     if (type == "TAS")
     {
-        TAS_Lock.lock();
+        TAS_Lock.unlock();
     }
     else if (type == "TTAS")
     {
