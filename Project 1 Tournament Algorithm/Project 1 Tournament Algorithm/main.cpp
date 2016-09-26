@@ -15,6 +15,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <atomic>
+#include <chrono>
 #include "PetersonLock.h"
 #include "Tournament.h"
 
@@ -34,11 +35,10 @@ void DoSomething(int thread_id)
     T.lock(thread_id, num_of_thread);
     //P.AcquireLock(thread_id);
     
-    unsigned long i = 0;
     counter += 1;
     printf("\n Job %d started\n", counter);
     
-    for(i = 0; i < (0xFFFFFFFF); i++);
+    this_thread::sleep_for(chrono::seconds(10));
     
     printf("\n Job %d finished\n", counter);
     

@@ -13,7 +13,7 @@
 #include <stdlib.h>
 #include <cmath>
 #include <time.h>
-#include <new>
+#include <chrono>
 #include "test-and-set.h"
 #include "TTAS.h"
 
@@ -30,13 +30,11 @@ void DoSomething()
 //    TAS_Lock.lock();
     TTAS_Lock.lock();
     
-    
-    unsigned long i = 0;
     counter += 1;
     
     cout<<"\n Job "<<counter<<" started\n";
     
-    for (i = 0; i < (0xFFFFFFFF); i++);
+    this_thread::sleep_for(chrono::seconds(10));
     
     cout<<"\n Job "<<counter<<" finished\n";
     
