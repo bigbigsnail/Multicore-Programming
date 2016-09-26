@@ -50,11 +50,13 @@ void DoSomething(int thread_id)
 int main(int argc, const char * argv[])
 {
     // insert code here...
-    //num_of_thread = atoi(argv[1]);
-    num_of_thread = 4;
-    static const int num = 4;
+    time_t start_time, end_time;
     
-    thread my_thread[num];
+    num_of_thread = atoi(argv[1]);
+    
+    time(&start_time);
+    
+    thread *my_thread = new thread[num_of_thread * sizeof(thread*)];
     
     for (int i = 0; i < num_of_thread; i++)
     {
@@ -65,6 +67,12 @@ int main(int argc, const char * argv[])
     {
         my_thread[j].join();
     }
+    
+    delete [] my_thread;
+    
+    time(&end_time);
+    
+    cout<<"Running time: "<<end_time - start_time<<"secondes"<<endl;
     
     return 0;
 }

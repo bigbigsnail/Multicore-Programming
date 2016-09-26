@@ -27,8 +27,8 @@ string type;
 
 void DoSomething()
 {
-    TAS_Lock.lock();
-//    TTAS_Lock.lock();
+//    TAS_Lock.lock();
+    TTAS_Lock.lock();
     
     
     unsigned long i = 0;
@@ -40,8 +40,8 @@ void DoSomething()
     
     cout<<"\n Job "<<counter<<" finished\n";
     
-    TAS_Lock.unlock();
-//    TTAS_Lock.unlock();
+//    TAS_Lock.unlock();
+    TTAS_Lock.unlock();
 }
 
 int main(int argc, const char * argv[])
@@ -53,7 +53,7 @@ int main(int argc, const char * argv[])
     
     time(&start_time);
     
-    thread *my_thread = new thread[num_of_thread*sizeof(thread*)];
+    thread *my_thread = new thread[num_of_thread * sizeof(thread*)];
     
     for (int i = 0; i < num_of_thread; i++)
     {
