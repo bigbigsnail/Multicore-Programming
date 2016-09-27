@@ -48,10 +48,13 @@ void DoSomething(int thread_id)
 timespec dur(timespec start, timespec end)
 {
     timespec temp;
-    if ((end.tv_nsec-start.tv_nsec)<0) {
+    if ((end.tv_nsec - start.tv_nsec) < 0)
+    {
         temp.tv_sec = end.tv_sec-start.tv_sec-1;
         temp.tv_nsec = 1000000000+end.tv_nsec-start.tv_nsec;
-    } else {
+    }
+    else
+    {
         temp.tv_sec = end.tv_sec-start.tv_sec;
         temp.tv_nsec = end.tv_nsec-start.tv_nsec;
     }
@@ -62,7 +65,8 @@ timespec dur(timespec start, timespec end)
 int main(int argc, const char * argv[])
 {
     // insert code here...
-    timespec start_time, end_time, duration;
+    timespec start_time, end_time, diff;
+    double duration;
     
     num_of_thread = atoi(argv[1]);
     
@@ -83,11 +87,11 @@ int main(int argc, const char * argv[])
     delete [] my_thread;
     
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_time);
+    diff = dur(start_time, end_time);
+    duration = diff.tv_sec * 1000.0 + diff.tv_nsec / 1000000.0;
     
-    duration = dur(start_time, end_time);
+    cout<<"Running time: "<<duration<<" ms."<<endl;
     
-    cout<<"Running time: "<<duration.tv_sec<<"secondes"<<endl;
-    cout<<"Running time: "<<duration.tv_nsec<<endl;
     
     return 0;
 }
