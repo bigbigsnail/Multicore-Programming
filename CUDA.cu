@@ -1,7 +1,7 @@
 #include <stdio.h>
 
-#define N 4
-#define BLOCK_SIZE 2
+#define N 512
+#define BLOCK_SIZE 16
 
 __global__ 
 void matrix_multiplication(int *A, int *B, int *C)
