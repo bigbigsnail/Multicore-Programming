@@ -1,7 +1,7 @@
 #include <stdio.h>
 
-#define N 8
-#define BLOCK_SIZE 2
+#define N 512
+#define BLOCK_SIZE 16
 
 __global__ 
 void matrix_multiplication(int *A, int *B, int *C)
@@ -44,10 +44,10 @@ void print_matrix(int *a)
 	{
 		for(int j = 0; j < N; j++)
 		{
-			printf("%d ", a[i * N+ j]);
+			printf("%d ", a[i * N + j]);
 		}
+		printf("\n");
 	}
-	printf("\n");
 	printf("\n");
 }
 
@@ -76,20 +76,19 @@ int main(void)
 	}
 
 	// copy inputs to device
-	cudaMemcpy( dev_a, &a, size, cudaMemcpyHostToDevice );
-	cudaMemcpy( dev_b, &b, size, cudaMemcpyHostToDevice );
+	cudaMemcpy( dev_a, a, size, cudaMemcpyHostToDevice );
+	cudaMemcpy( dev_b, b, size, cudaMemcpyHostToDevice );
 
 	//
 	dim3 dimGrid( (N / BLOCK_SIZE),(N / BLOCK_SIZE),1);
 	dim3 dimBlock(BLOCK_SIZE, BLOCK_SIZE,1);
 
 	// launch add() kernel on GPU, passing parameters
-	matrix_mul<<< dimGrid, dimBlock>>>( dev_a, dev_b, dev_c);
+	matrix_multiplication<<< dimGrid, dimBlock>>>( dev_a, dev_b, dev_c);
 
-	cudaMemcpy( &c, dev_c, size, cudaMemcpyDeviceToHost);
+	cudaMemcpy( c, dev_c, size, cudaMemcpyDeviceToHost);
 
 	print_matrix(a);
-	printf("\n");
 	print_matrix(b);
 	print_matrix(c);
 
