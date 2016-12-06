@@ -1,7 +1,7 @@
 #include <stdio.h>
 
 #define N 512
-#define BLOCK_SIZE 16
+#define BLOCK_SIZE 32
 
 __global__ 
 void matrix_multiplication(int *A, int *B, int *C)
@@ -12,15 +12,18 @@ void matrix_multiplication(int *A, int *B, int *C)
 	// Thread row and column
 	int threadX = threadIdx.x;
 	int threadY = threadIdx.y;
-
+	
+	// The row and column of the result matrix
 	int row = blockY * BLOCK_SIZE + threadY;
 	int col = blockX * BLOCK_SIZE + threadX;
-
+	
+	// local variable to compute result
 	int sum = 0;
 
 	__shared__ int tempA[BLOCK_SIZE][BLOCK_SIZE];
 	__shared__ int tempB[BLOCK_SIZE][BLOCK_SIZE];
-
+	
+	// i stands for i-th block
 	for (int i = 0; i < (N / BLOCK_SIZE); i++)
 	{
 		tempA[threadY][threadX] = A[row * N + i * BLOCK_SIZE + threadX];
@@ -34,10 +37,12 @@ void matrix_multiplication(int *A, int *B, int *C)
 		__syncthreads();
 
 	}
-
+	
+	// Each thread compute an element of result matrix C
 	C[row * N + col] = sum;
 }
 
+// Print result
 void print_matrix(int *a)
 {
 	for(int i = 0; i < N; i++)
@@ -79,11 +84,11 @@ int main(void)
 	cudaMemcpy( dev_a, a, size, cudaMemcpyHostToDevice );
 	cudaMemcpy( dev_b, b, size, cudaMemcpyHostToDevice );
 
-	//
+	// block size and number of threads within a block
 	dim3 dimGrid( (N / BLOCK_SIZE),(N / BLOCK_SIZE),1);
 	dim3 dimBlock(BLOCK_SIZE, BLOCK_SIZE,1);
 
-	// launch add() kernel on GPU, passing parameters
+	// launch kernel function on GPU, passing parameters
 	matrix_multiplication<<< dimGrid, dimBlock>>>( dev_a, dev_b, dev_c);
 
 	cudaMemcpy( c, dev_c, size, cudaMemcpyDeviceToHost);
