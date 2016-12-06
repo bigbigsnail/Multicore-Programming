@@ -1,0 +1,10 @@
+
+Project 4 CUDA Program/a
+
+*.cpp
+
+CUDA Program/CUDA Program/main.cpp
+
+*.pbxproj
+
+*.xcworkspacedata
